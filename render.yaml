@@ -1,0 +1,55 @@
+services:
+  - type: web
+    name: n8n
+    runtime: docker
+    repo: https://github.com/lakshcode9/n8n
+    region: oregon
+    plan: starter
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerContext: ./
+    envVars:
+      - key: N8N_PORT
+        value: 5678
+      - key: N8N_PROTOCOL
+        value: https
+      - key: WEBHOOK_URL
+        generateValue: true
+      - key: N8N_HOST
+        generateValue: true
+      - key: N8N_ENCRYPTION_KEY
+        generateValue: true
+      - key: GENERIC_TIMEZONE
+        value: America/New_York
+      - key: TZ
+        value: America/New_York
+    # Uncomment and configure for PostgreSQL database
+    # - key: DB_TYPE
+    #   value: postgresdb
+    # - key: DB_POSTGRESDB_HOST
+    #   fromDatabase:
+    #     name: n8n-db
+    #     property: host
+    # - key: DB_POSTGRESDB_PORT
+    #   fromDatabase:
+    #     name: n8n-db
+    #     property: port
+    # - key: DB_POSTGRESDB_DATABASE
+    #   fromDatabase:
+    #     name: n8n-db
+    #     property: database
+    # - key: DB_POSTGRESDB_USER
+    #   fromDatabase:
+    #     name: n8n-db
+    #     property: user
+    # - key: DB_POSTGRESDB_PASSWORD
+    #   fromDatabase:
+    #     name: n8n-db
+    #     property: password
+
+# Uncomment to add a PostgreSQL database
+# databases:
+#   - name: n8n-db
+#     databaseName: n8n
+#     user: n8n
+#     plan: starter
