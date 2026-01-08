@@ -7,7 +7,7 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 # Install yt-dlp
-RUN pip3 install --no-cache-dir yt-dlp
+RUN pip3 install --break-system-packages --no-cache-dir yt-dlp
 
 # Install n8n
 RUN npm install -g n8n
