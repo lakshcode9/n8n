@@ -3,7 +3,7 @@ services:
     name: n8n
     runtime: docker
     repo: https://github.com/lakshcode9/n8n
-    region: oregon
+    region: virginia
     plan: starter
     branch: main
     dockerfilePath: ./Dockerfile
