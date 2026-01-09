@@ -1,69 +1,239 @@
-# n8n Self-Hosted on Render (Free Forever Stack)
+<div align="center">
 
-A complete guide to running **n8n** for free using Render + Supabase + UptimeRobot, with custom media processing capabilities.
+# 🚀 n8n Self-Hosted with Custom Dependencies
 
-## 🎯 Why This Setup?
+### Free Forever Stack + Custom Dockerfile Template
 
-Running n8n locally works, but it's not practical for 24/7 automation. This stack solves the common problems:
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
+[![n8n](https://img.shields.io/badge/n8n-v2.2.4-orange)](https://n8n.io)
+[![Docker](https://img.shields.io/badge/Docker-Enabled-blue)](https://www.docker.com/)
+[![License](https://img.shields.io/badge/License-Sustainable%20Use-green)](https://github.com/n8n-io/n8n/blob/master/LICENSE.md)
 
-- **No data loss**: Workflows persist through restarts (external Postgres)
-- **Always available**: UptimeRobot keeps the service awake
-- **Custom capabilities**: Extended with ffmpeg, Python, and yt-dlp for media processing
-- **Free tier**: Zero cost using free tiers of Render, Supabase, and UptimeRobot
+**A complete guide to self-hosting n8n with custom dependencies for free, featuring a customizable Dockerfile template for advanced automation workflows.**
+
+[Quick Start](#-quick-start) • [Custom Dockerfile](#-custom-dockerfile-template) • [Use Cases](#-advanced-use-cases) • [Troubleshooting](#-troubleshooting)
+
+---
+
+</div>
+
+## 👋 About This Guide
+
+**Written by [Laksh](https://instagram.com/lakshpujary)**
+
+After countless hours of trial and error, I finally cracked the code to running n8n completely free with custom dependencies. This isn't just another basic n8n setup guide—it's a **template for building your own custom n8n instance** with whatever tools, libraries, or dependencies your workflows need.
+
+Whether you're building AI avatar workflows, custom automation pipelines, or need specific Python packages—this guide has you covered.
+
+📱 **Follow me**: [@lakshpujary](https://instagram.com/lakshpujary) for more automation content
+
+---
+
+## 🎯 What Makes This Different?
+
+Most n8n guides show you how to use the standard Docker image. **This guide teaches you how to extend it.**
+
+### Why Customize Your n8n Dockerfile?
+
+The standard n8n image is powerful, but it doesn't include everything. If you need:
+
+- 🎭 **AI Avatar & Lip-Sync Tools**: ffmpeg, face detection libraries, audio processing
+- 🐍 **Custom Python Packages**: Specific ML/AI libraries, data processing tools
+- 🎬 **Media Processing**: Video editing, transcoding, format conversion
+- 🛠️ **System Utilities**: Command-line tools, compilers, additional languages
+- 📦 **Niche Dependencies**: Industry-specific software or libraries
+
+Then you need a **custom Dockerfile**—and that's exactly what this template provides.
+
+---
+
+## 🏗️ The Stack
+
+This setup solves three major problems with self-hosting n8n:
+
+| Problem | Solution | Why It Works |
+|---------|----------|--------------|
+| ❌ Data loss on restart | ✅ Supabase (external Postgres) | Workflows persist forever |
+| ❌ Service goes to sleep | ✅ UptimeRobot | Pings every 5 min, keeps it awake |
+| ❌ Missing dependencies | ✅ Custom Dockerfile | Install anything you need |
+
+### Tech Stack:
+- **[Render](https://render.com)** - Free Docker hosting (750 hrs/month)
+- **[Supabase](https://supabase.com)** - Managed PostgreSQL (500MB free)
+- **[UptimeRobot](https://uptimerobot.com)** - Keep-alive monitoring (50 monitors free)
+
+**Total Cost: $0/month** 💰
+
+---
+
+## 🎬 Advanced Use Cases
+
+### What You Can Build With Custom Dependencies
+
+#### 1. AI Avatar Workflows (Live Face Animation)
+```dockerfile
+# Add face detection and lip-sync tools
+RUN apt-get install -y ffmpeg python3-opencv
+RUN pip3 install --break-system-packages face-recognition pydub
+```
+**Use Case**: Automated video generation with AI avatars that speak your content
+
+#### 2. Advanced Media Processing
+```dockerfile
+# Add video editing and transcoding
+RUN apt-get install -y ffmpeg imagemagick ghostscript
+RUN pip3 install --break-system-packages moviepy pillow
+```
+**Use Case**: Automated video editing, thumbnail generation, format conversion
+
+#### 3. Data Science Workflows
+```dockerfile
+# Add ML/AI libraries
+RUN pip3 install --break-system-packages pandas numpy scikit-learn tensorflow
+```
+**Use Case**: Automated data analysis, ML model inference, predictions
+
+#### 4. Web Scraping at Scale
+```dockerfile
+# Add headless browser support
+RUN apt-get install -y chromium-browser chromium-chromedriver
+RUN pip3 install --break-system-packages selenium beautifulsoup4
+```
+**Use Case**: Complex web scraping, automated testing, data extraction
+
+---
+
+## 🛠️ Custom Dockerfile Template
+
+This is the heart of the setup. The Dockerfile in this repo is **pre-configured with:**
+
+```dockerfile
+FROM node:20-bookworm-slim
+
+# Install system dependencies
+RUN apt-get update \
+  && apt-get install -y ffmpeg python3 python3-pip ca-certificates curl \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
+
+# Install yt-dlp (media downloader)
+RUN pip3 install --break-system-packages --no-cache-dir yt-dlp
+
+# Install n8n
+RUN npm install -g n8n
+
+# Create n8n user
+RUN useradd -m n8n
+
+# Set working directory
+WORKDIR /home/n8n
+
+# Switch to n8n user
+USER n8n
+
+# Expose port
+EXPOSE 5678
+
+# Start n8n
+CMD ["n8n", "start"]
+```
+
+### 🎨 Customize It for Your Needs
+
+Want to add your own dependencies? Here's how:
+
+**Example: Adding Machine Learning Tools**
+```dockerfile
+# After the system dependencies section, add:
+RUN apt-get install -y python3-dev build-essential
+
+# After the pip install section, add:
+RUN pip3 install --break-system-packages \
+    tensorflow \
+    torch \
+    opencv-python \
+    scikit-learn
+```
+
+**Example: Adding Ruby Support**
+```dockerfile
+# Add Ruby runtime
+RUN apt-get install -y ruby-full
+RUN gem install nokogiri httparty
+```
+
+**Example: Adding Go Binaries**
+```dockerfile
+# Install Go
+RUN wget https://go.dev/dl/go1.21.5.linux-amd64.tar.gz \
+  && tar -C /usr/local -xzf go1.21.5.linux-amd64.tar.gz
+ENV PATH="/usr/local/go/bin:${PATH}"
+```
+
+---
 
 ## 📋 Prerequisites
 
 Create free accounts on:
-1. **[Render](https://render.com)** - Docker web service hosting
-2. **[Supabase](https://supabase.com)** - Managed PostgreSQL database
-3. **[UptimeRobot](https://uptimerobot.com)** - Service monitoring (prevents idle sleep)
+1. 🔵 **[Render](https://render.com)** - Docker web service hosting
+2. 🟢 **[Supabase](https://supabase.com)** - Managed PostgreSQL database
+3. 🔴 **[UptimeRobot](https://uptimerobot.com)** - Service monitoring
 
-## 🗄️ Step 1: Set Up Supabase Database
+---
+
+## 🚀 Quick Start
+
+### Step 1: Set Up Supabase Database
 
 1. Log into Supabase → **New Project**
-2. Set your database password (save this!)
-3. Wait for project to finish provisioning
-4. Go to **Project Settings → Database → Connection Info**
-5. Note down the **Session Pooler** connection details:
-   - Host: `aws-1-us-east-1.pooler.supabase.com` (or your region)
-   - Port: `5432`
-   - Database: `postgres`
-   - User: `postgres.<your-project-id>`
-   - Password: `<your-password>`
+2. Set a strong database password 🔐 (save this!)
+3. Wait for project provisioning (~2 minutes)
+4. Go to **Project Settings → Database**
+5. Copy your **Session Pooler** connection details:
 
-> **Note**: Use the **Session Pooler**, not the direct connection. It handles connection limits better.
+```
+Host: aws-1-us-east-1.pooler.supabase.com
+Port: 5432
+Database: postgres
+User: postgres.<your-project-id>
+Password: <your-password>
+```
 
-## 🚀 Step 2: Deploy to Render
+> ⚡ **Pro Tip**: Always use the Session Pooler, not the direct connection. It handles connection limits much better.
 
-### Option A: Deploy via Blueprint (Recommended)
+---
 
-1. Fork this repository to your GitHub account
-2. Log into Render → **New** → **Blueprint**
-3. Connect your GitHub repository
-4. Render will automatically read `render.yaml` and set up the service
-5. The blueprint pre-configures:
-   - Docker runtime with custom image
-   - Port 5678
-   - US-East region (matches Supabase)
-   - Base environment variables
+### Step 2: Fork & Deploy to Render
 
-### Option B: Manual Deployment
+#### Option A: One-Click Deploy (Recommended)
 
-1. Log into Render → **New** → **Web Service**
-2. Select **Deploy from Docker**
+1. **Fork this repository** to your GitHub account
+2. Click the Deploy to Render button above
+3. Render will auto-detect `render.yaml` and configure everything
+4. Add your environment variables (see Step 3)
+5. Deploy! 🎉
+
+#### Option B: Manual Setup
+
+1. Log into Render → **New → Web Service**
+2. Connect your forked repository
 3. Configure:
-   - **Name**: `n8n` (or your choice)
-   - **Region**: `Virginia (US East)` (match your Supabase region)
-   - **Branch**: `main`
-   - **Dockerfile Path**: `./Dockerfile`
-   - **Docker Build Context**: `./`
+   ```
+   Name: n8n-custom
+   Region: Virginia (US East)
+   Branch: main
+   Runtime: Docker
+   Dockerfile Path: ./Dockerfile
+   ```
 4. Click **Create Web Service**
 
-## 🔧 Step 3: Configure Environment Variables
+---
 
-In Render dashboard → Your service → **Environment** tab, add these variables:
+### Step 3: Configure Environment Variables
 
-### Database Configuration (Supabase)
+In Render dashboard → **Environment** tab, add these:
+
+#### 🗄️ Database (Supabase)
 ```bash
 DB_TYPE=postgresdb
 DB_POSTGRESDB_HOST=aws-1-us-east-1.pooler.supabase.com
@@ -75,7 +245,7 @@ DB_POSTGRESDB_SSL=true
 DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED=false
 ```
 
-### n8n Base Configuration
+#### 🌐 n8n Configuration
 ```bash
 N8N_HOST=<your-app>.onrender.com
 N8N_PORT=5678
@@ -84,155 +254,234 @@ N8N_EDITOR_BASE_URL=https://<your-app>.onrender.com
 WEBHOOK_URL=https://<your-app>.onrender.com/
 ```
 
-### Security & Features
+#### 🔐 Security
 ```bash
-N8N_ENCRYPTION_KEY=<generate-random-32-char-string>
+N8N_ENCRYPTION_KEY=<generate-a-random-32-char-string>
 N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
 N8N_RUNNERS_ENABLED=true
 N8N_TRUSTED_PROXIES=0.0.0.0/0
 ```
 
-> ⚠️ **CRITICAL**: The `N8N_ENCRYPTION_KEY` must NEVER change. Save it somewhere safe. If you lose it, you cannot decrypt existing credentials.
+> 🚨 **CRITICAL**: Never change `N8N_ENCRYPTION_KEY` after first deployment. Store it safely!
 
-### Generate Encryption Key
+**Generate Encryption Key:**
 ```bash
-# Linux/Mac/WSL
 openssl rand -base64 32
-
-# Or use any random string generator
 ```
 
-## 🌐 Step 4: Custom Domain (Optional)
+---
 
-If you want to use your own domain like `n8n.yourdomain.com`:
+### Step 4: Custom Domain (Optional but Recommended)
 
-1. In Render → Your service → **Settings** → **Custom Domain**
-2. Add your domain (e.g., `n8n.yourdomain.com`)
-3. Render will provide a CNAME target
-4. In your DNS provider, add a CNAME record:
+Make your instance accessible at `n8n.yourdomain.com`:
+
+1. Render → **Settings → Custom Domain** → Add `n8n.yourdomain.com`
+2. Render provides a CNAME target
+3. In your DNS provider (Cloudflare, Namecheap, etc.):
    ```
    Type: CNAME
    Name: n8n
-   Value: <your-app>.onrender.com
+   Target: <your-app>.onrender.com
    TTL: 3600
    ```
-5. Wait for DNS propagation (5-30 minutes)
-6. Update environment variables to match:
+4. Update environment variables:
    ```bash
    N8N_HOST=n8n.yourdomain.com
    N8N_EDITOR_BASE_URL=https://n8n.yourdomain.com
    WEBHOOK_URL=https://n8n.yourdomain.com/
    ```
-7. Redeploy the service
+5. **Redeploy** the service
 
-## ⏰ Step 5: Keep It Awake with UptimeRobot
+DNS propagation takes 5-30 minutes ⏱️
 
-Render free tier idles after 15 minutes of inactivity. UptimeRobot pings it every 5 minutes to prevent sleep.
+---
 
-1. Log into UptimeRobot → **Add New Monitor**
+### Step 5: Keep It Awake (UptimeRobot)
+
+Render free tier idles after 15 minutes. UptimeRobot prevents this:
+
+1. UptimeRobot → **Add New Monitor**
 2. Configure:
-   - **Monitor Type**: HTTP(s)
-   - **Friendly Name**: `n8n keepalive`
-   - **URL**: `https://<your-app>.onrender.com` (or your custom domain)
-   - **Monitoring Interval**: 5 minutes
-3. Click **Create Monitor**
+   ```
+   Monitor Type: HTTP(s)
+   Friendly Name: n8n-keepalive
+   URL: https://<your-app>.onrender.com
+   Interval: 5 minutes
+   ```
+3. **Create Monitor**
 
-Your n8n instance will now stay awake 24/7 on the free tier.
+Your instance now stays awake 24/7! 🌟
 
-## 🎬 What's in the Custom Docker Image?
+---
 
-This setup uses a custom Dockerfile that extends the official n8n image with:
+## 🎨 What's Included Out of the Box
 
-- **ffmpeg**: Video/audio processing and conversion
-- **Python 3**: Runtime for Python-based nodes
-- **yt-dlp**: Download videos from YouTube and 1000+ sites
+This custom image comes pre-loaded with:
 
-This enables workflows that can:
-- Download and process media files
-- Convert audio/video formats
-- Extract audio from videos
-- Run Python scripts within workflows
+| Tool | Purpose | Use Cases |
+|------|---------|-----------|
+| **ffmpeg** | Video/audio processing | Transcoding, format conversion, streaming |
+| **Python 3** | Scripting runtime | Custom logic, data processing, ML inference |
+| **yt-dlp** | Media downloader | Download from 1000+ sites including YouTube |
+| **curl** | HTTP client | API testing, file downloads |
+| **ca-certificates** | SSL support | Secure connections |
 
-## 📝 Verify Deployment
+### Example Workflows You Can Build:
 
-1. Open your n8n URL: `https://<your-app>.onrender.com`
-2. First load may take 30-60 seconds (cold start)
-3. Create your owner account
-4. Test workflow persistence:
-   - Create a simple workflow
-   - Wait 20 minutes (let Render idle)
-   - Refresh - workflow should still be there ✅
+✅ **Video Processing Pipeline**
+- Download videos from YouTube
+- Extract audio tracks
+- Convert to different formats
+- Upload to cloud storage
+- Generate thumbnails
+
+✅ **AI Content Generation**
+- Text-to-speech with lip-sync
+- Automated video editing
+- Face detection and processing
+- Batch media processing
+
+✅ **Data Automation**
+- Web scraping with custom tools
+- Data transformation with Python
+- Scheduled API integrations
+- Automated reporting
+
+---
 
 ## 🔍 Troubleshooting
 
-### Database Connection Errors
+### ⚠️ Database Connection Timeouts
+
+**Symptoms:**
 ```
 Database connection timed out
 503 Database is not ready!
 ```
-**Solution**: 
-- Verify Supabase credentials are correct
-- Ensure you're using the Session Pooler, not direct connection
-- Check region match: Render service and Supabase should be in same region (US-East)
 
-### Service Won't Start
-- Check Render logs: Dashboard → Your service → Logs
-- Verify all environment variables are set
-- Ensure `N8N_ENCRYPTION_KEY` is set
-
-### Workflows Lost After Restart
-- Verify `DB_TYPE=postgresdb` is set
-- Check Supabase connection credentials
-- Look for database connection errors in logs
-
-### SSL/TLS Errors
-- Ensure `DB_POSTGRESDB_SSL=true`
-- Set `DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED=false`
-
-### Rate Limiting Issues
-- Set `N8N_TRUSTED_PROXIES=0.0.0.0/0` to trust Render's proxy headers
-
-## 🎯 Best Practices
-
-1. **Backup Your Encryption Key**: Store `N8N_ENCRYPTION_KEY` in a password manager
-2. **Use Session Pooler**: Direct Supabase connections have strict limits
-3. **Monitor UptimeRobot**: Check it's running to prevent service sleep
-4. **Set Data Retention**: Configure `EXECUTIONS_DATA_MAX_AGE=168` (7 days) to keep DB size manageable
-5. **Enable Pruning**: Set `EXECUTIONS_DATA_PRUNE=true` to auto-clean old executions
-
-## 📊 Expected Performance
-
-- **Cold Start**: 30-60 seconds (first request after idle)
-- **Warm Response**: <500ms
-- **Database Latency**: ~20-50ms (same region)
-- **Uptime**: 99.9%+ with UptimeRobot configured
-
-## 🚨 Common Mistakes
-
-1. ❌ Using wrong Supabase connection (use Session Pooler, not Transaction or Direct)
-2. ❌ Forgetting to set `N8N_ENCRYPTION_KEY` before first run
-3. ❌ Mismatching regions (Render in Oregon, Supabase in US-East)
-4. ❌ Not setting up UptimeRobot → service sleeps
-5. ❌ Typos in environment variables (double-check!)
-
-## 📚 Resources
-
-- [n8n Documentation](https://docs.n8n.io/)
-- [n8n Community](https://community.n8n.io/)
-- [Render Docs](https://render.com/docs)
-- [Supabase Docs](https://supabase.com/docs)
-- [UptimeRobot Docs](https://uptimerobot.com/api/)
-
-## 🤝 Contributing
-
-Found a better way to do something? Open an issue or PR!
-
-## 📄 License
-
-This setup guide is provided as-is. n8n itself is licensed under the [Sustainable Use License](https://github.com/n8n-io/n8n/blob/master/LICENSE.md).
+**Solutions:**
+1. ✅ Verify Supabase credentials are correct (check for typos!)
+2. ✅ Ensure you're using **Session Pooler**, not direct connection
+3. ✅ Check region match: Render = Virginia, Supabase = US-East
+4. ✅ Verify `DB_POSTGRESDB_SSL=true` is set
 
 ---
 
-**Built with ❤️ for the n8n community**
+### ⚠️ Service Won't Start
 
-*If this guide helped you, consider giving it a ⭐️*
+**Check:**
+- 📋 All environment variables are set
+- 🔑 `N8N_ENCRYPTION_KEY` is configured
+- 📝 Review logs: Render dashboard → Logs tab
+- 🐛 Check Dockerfile syntax if you modified it
+
+---
+
+### ⚠️ Workflows Lost After Restart
+
+**This means database isn't connected:**
+- ✅ Verify `DB_TYPE=postgresdb`
+- ✅ Check all `DB_POSTGRESDB_*` variables
+- ✅ Look for connection errors in logs
+- ✅ Test Supabase connection separately
+
+---
+
+### ⚠️ Custom Dependencies Not Working
+
+**If your added packages don't work:**
+- 🔧 Check Dockerfile syntax
+- 📦 Verify package names are correct
+- 🏗️ Rebuild: Clear cache → Manual Deploy
+- 📝 Check build logs for errors
+
+---
+
+## 📊 Performance Metrics
+
+| Metric | Value | Notes |
+|--------|-------|-------|
+| Cold Start | 30-60s | First request after idle |
+| Warm Response | <500ms | Subsequent requests |
+| DB Latency | 20-50ms | Same-region (Virginia ↔ US-East) |
+| Uptime | 99.9%+ | With UptimeRobot configured |
+| Storage | 500MB | Supabase free tier |
+| Compute | 750hrs/mo | Render free tier |
+
+---
+
+## 🎯 Best Practices
+
+### Do's ✅
+- ✅ **Always backup** your `N8N_ENCRYPTION_KEY`
+- ✅ **Use Session Pooler** for Supabase connections
+- ✅ **Set up UptimeRobot** before going live
+- ✅ **Test workflows** after any Dockerfile changes
+- ✅ **Enable data pruning** to keep DB size manageable
+- ✅ **Match regions** (Render + Supabase)
+
+### Don'ts ❌
+- ❌ Don't change encryption key after first deployment
+- ❌ Don't use direct Supabase connection (use pooler)
+- ❌ Don't skip UptimeRobot (service will sleep)
+- ❌ Don't add unnecessary dependencies (bloats image)
+- ❌ Don't forget to rebuild after Dockerfile changes
+
+---
+
+## 🚨 Common Mistakes & Fixes
+
+| Mistake | Impact | Fix |
+|---------|--------|-----|
+| Wrong Supabase connection type | Timeouts, errors | Use Session Pooler |
+| Missing encryption key | Can't decrypt credentials | Set before first run |
+| Mismatched regions | High latency, timeouts | Use Virginia + US-East |
+| No UptimeRobot | Service sleeps, delays | Set 5-min monitoring |
+| Typos in env vars | Service won't start | Double-check everything |
+
+---
+
+## 🎓 Learning Resources
+
+- 📖 [n8n Official Docs](https://docs.n8n.io/)
+- 💬 [n8n Community Forum](https://community.n8n.io/)
+- 🎥 [n8n YouTube Channel](https://www.youtube.com/@n8n-io)
+- 📦 [Docker Best Practices](https://docs.docker.com/develop/dev-best-practices/)
+- 🐘 [Supabase Documentation](https://supabase.com/docs)
+
+---
+
+## 🤝 Contributing
+
+Found a better approach? Have a cool custom Dockerfile example? Contributions welcome!
+
+1. Fork this repo
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+---
+
+## 📄 License
+
+This setup guide is open-source and provided as-is.  
+n8n is licensed under the [Sustainable Use License](https://github.com/n8n-io/n8n/blob/master/LICENSE.md).
+
+---
+
+<div align="center">
+
+## 💫 Built by the Community, for the Community
+
+**Created by [@lakshpujary](https://instagram.com/lakshpujary)**
+
+If this guide helped you save time and money, consider:
+- ⭐ Starring this repository
+- 📱 Following me on [Instagram](https://instagram.com/lakshpujary)
+- 🔄 Sharing with others who need it
+
+---
+
+### Made with ❤️ for the n8n automation community
+
+</div>
