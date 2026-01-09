@@ -13,43 +13,50 @@ services:
         value: 5678
       - key: N8N_PROTOCOL
         value: https
-      # Disable the built-in Python runner (requires an external runner/venv)
-      - key: N8N_RUNNERS_DISABLED
-        value: python
-      # Force task runners to stay internal; adjust to external when you add runners
-      - key: N8N_RUNNERS_MODE
-        value: internal
-      - key: WEBHOOK_URL
-        generateValue: true
       - key: N8N_HOST
-        generateValue: true
+        sync: false
+      - key: N8N_EDITOR_BASE_URL
+        sync: false
+      - key: WEBHOOK_URL
+        sync: false
       - key: N8N_ENCRYPTION_KEY
-        generateValue: true
+        sync: false
+      - key: N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS
+        value: "true"
+      - key: N8N_TRUSTED_PROXIES
+        value: "0.0.0.0/0"
       - key: GENERIC_TIMEZONE
         value: America/New_York
       - key: TZ
         value: America/New_York
-      # Supabase PostgreSQL connection
+      # Supabase PostgreSQL connection (all set via Render dashboard)
       - key: DB_TYPE
-        value: postgresdb
+        sync: false
       - key: DB_POSTGRESDB_HOST
         sync: false
       - key: DB_POSTGRESDB_PORT
-        value: "5432"
+        sync: false
       - key: DB_POSTGRESDB_DATABASE
         sync: false
       - key: DB_POSTGRESDB_USER
         sync: false
       - key: DB_POSTGRESDB_PASSWORD
         sync: false
-      # Supabase requires SSL
-      - key: DB_POSTGRESDB_SSL_ENABLED
-        value: "true"
+      - key: DB_POSTGRESDB_SSL
+        sync: false
       - key: DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED
-        value: "false"
-      # Connection pool settings for Supabase
+        sync: false
+      # Connection resilience for Supabase pooler
       - key: DB_POSTGRESDB_POOL_SIZE
-        value: "5"
+        value: "10"
+      - key: DB_POSTGRESDB_CONNECTION_TIMEOUT_MS
+        value: "60000"
+      - key: DB_POSTGRESDB_STATEMENT_TIMEOUT_MS
+        value: "120000"
+      # Task runners (matching your existing config)
+      - key: N8N_RUNNERS_ENABLED
+        sync: false
+      # Data pruning
       - key: EXECUTIONS_DATA_PRUNE
         value: "true"
       - key: EXECUTIONS_DATA_MAX_AGE
