@@ -29,32 +29,28 @@ services:
         value: America/New_York
       - key: TZ
         value: America/New_York
-      # Postgres (required for reliability; using SQLite on Render is unstable)
+      # Supabase PostgreSQL connection
       - key: DB_TYPE
         value: postgresdb
       - key: DB_POSTGRESDB_HOST
-        fromDatabase:
-          name: n8n-db
-          property: host
+        sync: false
       - key: DB_POSTGRESDB_PORT
-        fromDatabase:
-          name: n8n-db
-          property: port
+        value: "5432"
       - key: DB_POSTGRESDB_DATABASE
-        fromDatabase:
-          name: n8n-db
-          property: database
+        sync: false
       - key: DB_POSTGRESDB_USER
-        fromDatabase:
-          name: n8n-db
-          property: user
+        sync: false
       - key: DB_POSTGRESDB_PASSWORD
-        fromDatabase:
-          name: n8n-db
-          property: password
-
-databases:
-  - name: n8n-db
-    databaseName: n8n
-    user: n8n
-    plan: starter
+        sync: false
+      # Supabase requires SSL
+      - key: DB_POSTGRESDB_SSL_ENABLED
+        value: "true"
+      - key: DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED
+        value: "false"
+      # Connection pool settings for Supabase
+      - key: DB_POSTGRESDB_POOL_SIZE
+        value: "5"
+      - key: EXECUTIONS_DATA_PRUNE
+        value: "true"
+      - key: EXECUTIONS_DATA_MAX_AGE
+        value: "168"
