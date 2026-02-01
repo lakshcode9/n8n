@@ -258,6 +258,7 @@ WEBHOOK_URL=https://<your-app>.onrender.com/
 ```bash
 N8N_ENCRYPTION_KEY=<generate-a-random-32-char-string>
 N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+N8N_BLOCK_ENV_ACCESS_IN_NODE=false
 N8N_RUNNERS_ENABLED=true
 N8N_TRUSTED_PROXIES=0.0.0.0/0
 ```
